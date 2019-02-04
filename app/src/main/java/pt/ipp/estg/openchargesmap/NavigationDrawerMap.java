@@ -3,8 +3,6 @@ package pt.ipp.estg.openchargesmap;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,14 +13,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
 
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class NavigationDrawerMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private Button signOutButton;
+    EditText emailinput;
+
+
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -39,6 +42,15 @@ public class NavigationDrawerMap extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_drawer_map);
+
+        emailinput = (EditText)findViewById(R.id.emailinput);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView navEmail = (TextView) headerView.findViewById(R.id.emailTextView);
+
+
+        navEmail.setText(emailinput.getText().toString());
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         mAuth = FirebaseAuth.getInstance();
@@ -59,7 +71,6 @@ public class NavigationDrawerMap extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -111,8 +122,11 @@ public class NavigationDrawerMap extends AppCompatActivity
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.logoutButton) {
+        } else if (id == R.id.googleLOButton) {
             logout();
+
+        } else if (id == R.id.userLogOut) {
+            Intent intent = new Intent(NavigationDrawerMap.this, Login.class);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

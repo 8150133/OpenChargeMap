@@ -29,7 +29,12 @@
                 android:icon="@drawable/ic_menu_share"
                 android:title="Share" />
             <item
-                android:id="@+id/logoutButton"
+                android:id="@+id/googleLOButton"
+                android:icon="@drawable/logout"
+                android:title="Logout From Google" />
+
+            <item
+                android:id="@+id/userLogOut"
                 android:icon="@drawable/logout"
                 android:title="Logout" />
         </menu>
