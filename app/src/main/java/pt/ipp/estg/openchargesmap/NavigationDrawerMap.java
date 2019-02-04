@@ -48,9 +48,7 @@ public class NavigationDrawerMap extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView navEmail = (TextView) headerView.findViewById(R.id.emailTextView);
-
-
-        navEmail.setText(emailinput.getText());
+        navEmail.setText("FODASSE, FILHO DUMA GRANDE PUTA!!! VAI TE ENCHER DE DILDOS AFRICANOS DE 17CM COM VEIAS SALIENTES");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
