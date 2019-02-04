@@ -44,12 +44,13 @@ public class NavigationDrawerMap extends AppCompatActivity
         setContentView(R.layout.activity_navigation_drawer_map);
 
         emailinput = (EditText)findViewById(R.id.emailinput);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView navEmail = (TextView) headerView.findViewById(R.id.emailTextView);
 
 
-        navEmail.setText(emailinput.getText().toString());
+        navEmail.setText(emailinput.getText());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 

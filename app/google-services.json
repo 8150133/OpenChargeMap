@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "996596191362",
+    "firebase_url": "https://openchargesmap.firebaseio.com",
+    "project_id": "openchargesmap",
+    "storage_bucket": "openchargesmap.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996596191362:android:10f15acda7ea7fde",
+        "android_client_info": {
+          "package_name": "pt.ipp.estg.openchargesmap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "996596191362-eldcq81jhlkbfmjn60k9n8u2nmbjfajt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pt.ipp.estg.openchargesmap",
+            "certificate_hash": "b27ec064afde39e482b17fc84fda20ef86249258"
+          }
+        },
+        {
+          "client_id": "996596191362-n0vtu8hjaof8jpu9saqmcjclicirg5ep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxLXYFCV1rvGwVHWwnCKXX9JnKqk2_2KQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "996596191362-n0vtu8hjaof8jpu9saqmcjclicirg5ep.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
