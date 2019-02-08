@@ -42,38 +42,32 @@ import pt.ipp.estg.openchargesmap.Database.UserDatabase;
 public class Login extends AppCompatActivity {
 
     private Button btSignIn;
-    SignInButton googleSIButton;
     private Button btSignUp;
     private EditText edtEmail;
     private EditText edtPassword;
     private UserDatabase database;
-    private String TAG = "Login";
 
     private UserDao userDao;
     private ProgressDialog progressDialog;
 
-    FirebaseAuth mAuth;
-    static final int RC_SIGN_IN= 1;
-    GoogleApiClient mGoogleApiClient;
-    GoogleSignInClient mGoogleSignInClient;
-    FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        Log.d("MYTAG", "inicio ");
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("A verificar utilizador...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setProgress(0);
+
+        edtEmail = findViewById(R.id.emailinput);
 
         btSignIn = findViewById(R.id.btSignIn);
         btSignUp = findViewById(R.id.btSignUp);
@@ -93,10 +87,11 @@ public class Login extends AppCompatActivity {
                         public void run() {
                             User user = userDao.getUser(edtEmail.getText().toString(), edtPassword.getText().toString());
                             if (user != null) {
-                                Intent i = new Intent(Login.this, UserActivity.class);
-                                i.putExtra("User", user);
+                                Log.d("testes", "preparado ");
+                                Intent i = new Intent(Login.this, NavigationDrawerMap.class);
+                                i.putExtra("UserEmail", user.getEmail());
                                 startActivity(i);
-                                finish();
+                                //finish();
                             } else {
                                 Toast.makeText(Login.this, "Utilizador não registado, ou não existente", Toast.LENGTH_SHORT).show();
                             }
@@ -111,7 +106,12 @@ public class Login extends AppCompatActivity {
         });
 
 
-        edtEmail = findViewById(R.id.emailinput);
+//        edtEmail.getText().toString();
+//        Intent emailIntent = new Intent(this, NavigationDrawerMap.class);
+//        emailIntent.putExtra("email", String.valueOf(edtEmail));
+//        startActivity(emailIntent);
+
+
         edtPassword = findViewById(R.id.passwordinput);
 
 
@@ -121,105 +121,14 @@ public class Login extends AppCompatActivity {
 
         userDao = database.getUserDao();
 
-
-        googleSIButton = (SignInButton) findViewById(R.id.googleSIButton);
-
-
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gSIo = new GoogleSignInOptions.Builder()
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gSIo);
-
-        mAuth=FirebaseAuth.getInstance();
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    startActivity(new Intent(Login.this,NavigationDrawerMap.class));
-                }
-            }
-        };
-
-        googleSIButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
-
     }
 
     private boolean emptyValidation() {
         if (TextUtils.isEmpty(edtEmail.getText().toString()) || TextUtils.isEmpty(edtPassword.getText().toString())) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
-    private void signIn(){
-        Intent signIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                if(account != null){
-                    firebaseAuthWithGoogle(account);
-                }
-            } catch(ApiException e){
-                Log.w(TAG,"Google Sign In Failed",e);
-            }
-        }
-    }
-
-    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        Log.d("TAG","firebaseAuthWithGoogle: " + account.getId());
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    //Sign In succes, updateUI with the signed-in user's information
-                    Log.d(TAG,"Credenciais de Login:Sucesso");
-                    FirebaseUser user=mAuth.getCurrentUser();
-                    updateUI(user);
-                } else{
-                    //if sign in fails, display a message to the user
-                    Log.w(TAG,"Credenciais de Login:Falha", task.getException());
-                    Toast.makeText(Login.this,"Não foi possível fazer login na conta Google ",Toast.LENGTH_LONG).show();
-                    //updateUI(user);
-                }
-            }
-        });
-
-    }
-
-    private void updateUI(FirebaseUser user) {
-        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if (acct != null) {
-            String personName = acct.getDisplayName();
-            String personGivenName = acct.getGivenName();
-            String personFamilyName = acct.getFamilyName();
-            String personEmail = acct.getEmail();
-            String personId = acct.getId();
-            Uri personPhoto = acct.getPhotoUrl();
-
-            Toast.makeText(this,"Nome do utilizador: " +personName + "ID Utilizador: " +personId ,Toast.LENGTH_SHORT).show();
-        }
-
-    }
 }
