@@ -1,10 +1,18 @@
 package pt.ipp.estg.openchargesmap.API;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class PostosCarregamento {
+    @SerializedName("ID")
+    @Expose
     public int ID;
-    public List<AdressInfo> AdressInfo;
+
+    @SerializedName("AddressInfo")
+    @Expose
+    public AdressInfo adressInfo;
 
     public int getID() {
         return ID;
@@ -14,11 +22,12 @@ public class PostosCarregamento {
         this.ID = ID;
     }
 
-    public List<pt.ipp.estg.openchargesmap.API.AdressInfo> getAdressInfo() {
-        return AdressInfo;
+    public AdressInfo getAdressInfo() {
+        return adressInfo;
     }
 
-    public void setAdressInfo(List<pt.ipp.estg.openchargesmap.API.AdressInfo> adressInfo) {
-        AdressInfo = adressInfo;
+    public void setAdressInfo(AdressInfo adressInfo) {
+        this.adressInfo = adressInfo;
     }
 }
+

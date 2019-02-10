@@ -1,10 +1,27 @@
 package pt.ipp.estg.openchargesmap.API;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class AdressInfo {
+    @SerializedName("Title")
+    @Expose
     private String Title;
+
+    @SerializedName("AddressLine1")
+    @Expose
     private String AdressLine1;
+
+    @SerializedName("Town")
+    @Expose
     private String Town;
+
+    @SerializedName("Latitude")
+    @Expose
     private float Latitude;
+
+    @SerializedName("Longitude")
+    @Expose
     private float Longitude;
 
     public String getTitle() {

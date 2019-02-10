@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,7 +38,21 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import pt.ipp.estg.openchargesmap.API.OpenChargeMapAPI;
+import pt.ipp.estg.openchargesmap.API.PostosCarregamento;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
 
     private GoogleMap mMap;
     private static final int REQUEST_USER_LOCATION_CODE = 99;
@@ -48,7 +63,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location lastLocation;
     private Marker currentLocation;
     private Button logout;
+    private Button postsRecyclerView;
+    private static final String BASE_URL = "https://api.openchargemap.io/v2/" ;
 
+    public void callRetrofit() {
+
+        Map<String, String> data = new HashMap<>();
+        data.put("output", "json");
+        data.put("maxresults", "10");
+        data.put("compact", "true");
+        data.put("verbose", "false");
+        data.put("latitude", "41.3627437");
+        data.put("longitude", "-8.1955167");
+
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        OpenChargeMapAPI openChargeMapAPI= retrofit.create(OpenChargeMapAPI.class);
+        Call<List<PostosCarregamento>> call = openChargeMapAPI.GetPostos(data);
+
+        call.enqueue(new Callback<List<PostosCarregamento>>() {
+            @Override
+            public void onResponse(Call<List<PostosCarregamento>> call, Response<List<PostosCarregamento>> response) {
+                ArrayList<PostosCarregamento> postosCarregamento = new ArrayList<>();
+                postosCarregamento = (ArrayList<PostosCarregamento>) response.body();
+                Log.d("TAG", "onReponse: Received information" + response.body().toString());
+                Toast.makeText(MapsActivity.this, "recebida", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<PostosCarregamento>> call, Throwable t) {
+                Log.e("TAG", "Something went wrong" + t.getMessage());
+                Toast.makeText(MapsActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
 
 
 
@@ -56,34 +107,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            checkUserLocationPermission();
+//        }
+//        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//            return;
+//        }
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkUserLocationPermission();
-        }
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
-        //----------------------------------------------------------------------------------------//
 
 
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+//        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
+//
+//        logout = (Button) findViewById(R.id.logoutIV);
+//        logout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intLogout = new Intent(MapsActivity.this, Login.class);
+//                MapsActivity.this.startActivity(intLogout);
+//            }
+//        });
+//
+//        postsRecyclerView = (Button) findViewById(R.id.recyclerView);
+//        postsRecyclerView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intLogout = new Intent(MapsActivity.this, Posts.class);
+//                MapsActivity.this.startActivity(intLogout);
+//            }
+//        });
 
-        logout = (Button) findViewById(R.id.logoutIV);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intLogout = new Intent(MapsActivity.this, Login.class);
-                MapsActivity.this.startActivity(intLogout);
-            }
-        });
-
+        callRetrofit();
     }
 
     public boolean checkUserLocationPermission() {
