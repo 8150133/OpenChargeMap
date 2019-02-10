@@ -17,24 +17,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApi;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 
 import pt.ipp.estg.openchargesmap.Database.UserDao;
 import pt.ipp.estg.openchargesmap.Database.UserDatabase;
@@ -88,7 +70,7 @@ public class Login extends AppCompatActivity {
                             User user = userDao.getUser(edtEmail.getText().toString(), edtPassword.getText().toString());
                             if (user != null) {
                                 Log.d("testes", "preparado ");
-                                Intent i = new Intent(Login.this, NavigationDrawerMap.class);
+                                Intent i = new Intent(Login.this, MapsActivity.class);
                                 i.putExtra("UserEmail", user.getEmail());
                                 startActivity(i);
                                 //finish();
@@ -104,13 +86,6 @@ public class Login extends AppCompatActivity {
                 }
             }
         });
-
-
-//        edtEmail.getText().toString();
-//        Intent emailIntent = new Intent(this, NavigationDrawerMap.class);
-//        emailIntent.putExtra("email", String.valueOf(edtEmail));
-//        startActivity(emailIntent);
-
 
         edtPassword = findViewById(R.id.passwordinput);
 
