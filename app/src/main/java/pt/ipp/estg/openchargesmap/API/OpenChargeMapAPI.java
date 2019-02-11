@@ -15,10 +15,6 @@ public interface OpenChargeMapAPI {
 
     public static final String url = "https://api.openchargemap.io/v2/poi/?output=json&maxresults=10&compact=true&verbose=false";
 
-    @GET("poi")
-
-    Call<PostsList> postsCatalog();
-
     @Headers("Content-Type: application/json")
     @GET("poi/")
     Call<List<PostosCarregamento>> GetPostos(@QueryMap Map<String, String> options);
