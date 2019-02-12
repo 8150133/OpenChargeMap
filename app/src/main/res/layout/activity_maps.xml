@@ -13,27 +13,36 @@
         android:layout_height="match_parent"
         tools:context=".MapsActivity">
 
-        <Button
+        <ImageButton
             android:id="@+id/recyclerView"
-            android:background="@drawable/border"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="0dp"
             android:layout_gravity="right|top"
             android:layout_marginTop="50dp"
-            android:drawableTop="@drawable/ic_list_black_24dp"
+            android:src="@drawable/ic_list_black_24dp"
             android:padding="10dp"
             android:paddingRight="10dp" />
 
-        <Button
+        <ImageButton
             android:id="@+id/logoutIV"
-            android:background="@drawable/border"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="0dp"
             android:layout_gravity="right|top"
-            android:layout_marginTop="110dp"
-            android:drawableTop="@drawable/logout"
+            android:layout_marginTop="100dp"
+            android:src="@drawable/logout"
+            android:padding="10dp"
+            android:paddingRight="10dp" />
+
+        <ImageButton
+            android:id="@+id/addChargementInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:layout_gravity="right|top"
+            android:layout_marginTop="150dp"
+            android:src="@drawable/ic_add_black_24dp"
             android:padding="10dp"
             android:paddingRight="10dp" />
 
