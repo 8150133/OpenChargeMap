@@ -114,8 +114,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void addMarker(double lat, double lng) {
-        LatLng coordenadas = new LatLng(lat, lng);
+    private void addMarker(double lati, double longi) {
+        LatLng coordenadas = new LatLng(lati, longi);
         CameraUpdate myLocation = CameraUpdateFactory.newLatLngZoom(coordenadas, 16);
         if (userMarker != null) userMarker.remove();
         userMarker = mMap.addMarker(new MarkerOptions().position(coordenadas).title("UserLocation"));
