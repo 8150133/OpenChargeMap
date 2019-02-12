@@ -2,7 +2,6 @@ package pt.ipp.estg.openchargesmap;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -11,10 +10,6 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -68,8 +63,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton logout;
     private ImageButton postsRecyclerView;
     private ImageButton addChargementInfo;
-    private double lat;
-    private double lang;
+    double lati = 0.0;
+    double longi = 0.0;
+    double latitude = 0.0;
+    double longitude = 0.0;
     RecyclerView rvPostos;
     PostosAdapter postosAdapter;
     List<AdressInfo> adressInfo;
@@ -77,140 +74,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ImageView map;
     private static final String BASE_URL = "https://api.openchargemap.io/v2/";
 
-    public void CallAPI() {
-
-
-        Map<String, String> data = new HashMap<>();
-        data.put("output", "json");
-        data.put("maxresults", "100");
-        data.put("compact", "true");
-        data.put("verbose", "false");
-        data.put("latitude", Double.toString(lat));
-        data.put("longitude", Double.toString(lang));
-
-
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-        OpenChargeMapAPI ocmAPI = retrofit.create(OpenChargeMapAPI.class);
-        Call<List<PostosCarregamento>> call = ocmAPI.GetPostos(data);
-
-        call.enqueue(new Callback<List<PostosCarregamento>>() {
-            @Override
-            public void onResponse(Call<List<PostosCarregamento>> call, Response<List<PostosCarregamento>> response) {
-                ArrayList<PostosCarregamento> postos = new ArrayList<>();
-                postos = (ArrayList<PostosCarregamento>) response.body();
-                Log.d("TAG", "Nothing Went Wrong" + response.body().toString());
-                addPosts(postos);
-
-
-            }
-
-            @Override
-            public void onFailure(Call<List<PostosCarregamento>> call, Throwable t) {
-                Log.e("TAG", "Something went wrong" + t.getMessage());
-                Toast.makeText(MapsActivity.this, "Erro", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        logout = (ImageButton) findViewById(R.id.logoutIV);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intLogout = new Intent(MapsActivity.this, Login.class);
-                MapsActivity.this.startActivity(intLogout);
-            }
-        });
-
-        postsRecyclerView = (ImageButton) findViewById(R.id.recyclerView);
-        postsRecyclerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intRecycler = new Intent(MapsActivity.this, PostosActivity.class);
-                MapsActivity.this.startActivity(intRecycler);
-            }
-        });
-
-        addChargementInfo = (ImageButton) findViewById(R.id.addChargementInfo);
-        addChargementInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intAdd = new Intent(MapsActivity.this, ChargementHistoric.class);
-                MapsActivity.this.startActivity(intAdd);
-            }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.map_options, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Change the map type based on the user's selection.
-        switch (item.getItemId()) {
-            case R.id.normal_map:
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                return true;
-            case R.id.hybrid_map:
-                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                return true;
-            case R.id.satellite_map:
-                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                return true;
-            case R.id.terrain_map:
-                mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-
-
-        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         myLocation();
+    }
 
+    private void addPostMarker(List<PostosCarregamento> pc) {
+
+        for (int i = 0; i < pc.size(); i++) {
+            LatLng latLng = new LatLng(pc.get(i).adressInfo.getLatitude(), pc.get(i).adressInfo.getLongitude());
+
+
+            postsMarker = mMap.addMarker(new MarkerOptions()
+                    .position(latLng));
+
+            postsMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
+        }
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                return true;
+            }
+        });
 
     }
 
-    private void addUserMarker(double lat, double lang) {
-        LatLng latLng = new LatLng(lat, lang);
-        CameraUpdate myLocation = CameraUpdateFactory.newLatLngZoom(latLng, 16);
-        if (userMarker != null) {
-            userMarker.remove();
-        }
-        userMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("UserLocation").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+    private void addMarker(double lat, double lng) {
+        LatLng coordenadas = new LatLng(lat, lng);
+        CameraUpdate myLocation = CameraUpdateFactory.newLatLngZoom(coordenadas, 16);
+        if (userMarker != null) userMarker.remove();
+        userMarker = mMap.addMarker(new MarkerOptions().position(coordenadas).title("UserLocation"));
         mMap.animateCamera(myLocation);
     }
 
-    private void updatePosition(Location location) {
+    private void updateUserPosition(Location location) {
         if (location != null) {
-            lat = location.getLatitude();
-            lang = location.getLongitude();
-            addUserMarker(lat, lang);
+            lati = location.getLatitude();
+            longi = location.getLongitude();
+            addMarker(lati, longi);
+        }
+    }
+
+    private void updatePostPosition(Location location) {
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
         }
     }
 
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            updatePosition(location);
+            updateUserPosition(location);
+            updatePostPosition(location);
         }
 
         @Override
@@ -227,38 +158,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onProviderDisabled(String provider) {
 
         }
-
     };
 
     private void myLocation() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
             return;
         }
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        updatePosition(location);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, (android.location.LocationListener) locationListener);
-        CallAPI();
-
+        updateUserPosition(location);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, locationListener);
+        callAPI();
     }
 
-    private void addPosts(List<PostosCarregamento> pc) {
-        for (int i = 0; i < pc.size(); i++) {
-            LatLng latLng = new LatLng(pc.get(i).adressInfo.getLatitude(), pc.get(i).adressInfo.getLongitude());
+    public void callAPI() {
 
-            postsMarker = mMap.addMarker(new MarkerOptions()
-                    .position(latLng));
-        }
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        Map<String, String> data = new HashMap<>();
+        data.put("output", "json");
+        data.put("maxresults", "100");
+        data.put("compact", "true");
+        data.put("verbose", "false");
+        data.put("latitude", Double.toString(lati));
+        data.put("longitude", Double.toString(longi));
+
+//        Intent intent = new Intent(this, POI_info.class);
+//        String latitude = Double.toString(lat);
+//        intent.putExtra("latitude", latitude);
+//        String longitude = Double.toString(lng);
+//        intent.putExtra("longitude",longitude);
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("https://api.openchargemap.io/v2/").addConverterFactory(GsonConverterFactory.create()).build();
+        OpenChargeMapAPI ocmAPI = retrofit.create(OpenChargeMapAPI.class);
+        Call<List<PostosCarregamento>> call = ocmAPI.GetPostos(data);
+
+        call.enqueue(new Callback<List<PostosCarregamento>>() {
+            @Override
+            public void onResponse(Call<List<PostosCarregamento>> call, Response<List<PostosCarregamento>> response) {
+                ArrayList<PostosCarregamento> pc = new ArrayList<>();
+                pc = (ArrayList<PostosCarregamento>) response.body();
+                Log.d("TAG", "Information Received" + response.body().toString());
+                Toast.makeText(MapsActivity.this, "Received!", Toast.LENGTH_SHORT).show();
+                addPostMarker(pc);
+
+            }
 
             @Override
-            public boolean onMarkerClick(Marker marker) {
-
-                return true;
+            public void onFailure(Call<List<PostosCarregamento>> call, Throwable t) {
+                Log.e("TAG", "Information Not Received" + t.getMessage());
+                Toast.makeText(MapsActivity.this, "Error", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }
